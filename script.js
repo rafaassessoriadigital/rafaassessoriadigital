@@ -1,11 +1,44 @@
 document.addEventListener("DOMContentLoaded", () => {
   const WHATSAPP_NUMERO = "5541988685625";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsSkGetSPTiYirnM1SFWMZ1AQPL6iMf3sEWzQH7kd7B8ZXA7Yz9_H3pXMXEh5A4WKsNQ/exec";
 
   const chatMensagens = document.getElementById("chat-mensagens");
   const chatOpcoes = document.getElementById("chat-opcoes");
   const chatForm = document.getElementById("chat-form");
   const chatInput = document.getElementById("chat-input");
   const btnResetChat = document.getElementById("btn-reset-chat");
+
+  function obterOrigemTrafego() {
+    const params = new URLSearchParams(window.location.search);
+    const utmSource = params.get("utm_source");
+    const utmMedium = params.get("utm_medium");
+    const utmCampaign = params.get("utm_campaign");
+
+    if (utmSource) {
+      return [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / ");
+    }
+    if (document.referrer) {
+      return document.referrer;
+    }
+    return "Acesso direto";
+  }
+
+  function obterDispositivo() {
+    return /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Celular" : "Computador";
+  }
+
+  function enviarParaPlanilha(payload) {
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("COLE_AQUI")) return;
+
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    }).catch((err) => console.error("Erro ao registrar na planilha:", err));
+  }
 
   const etapas = [
     {
@@ -112,6 +145,18 @@ document.addEventListener("DOMContentLoaded", () => {
     chatInput.placeholder = "Triagem concluída! Clique no botão acima para falar com o Rafa.";
 
     const resultado = diagnosticarModelo(respostas);
+    const origem = obterOrigemTrafego();
+    const dispositivo = obterDispositivo();
+
+    enviarParaPlanilha({
+      nicho: respostas.nicho,
+      objetivo: respostas.objetivo,
+      urgencia: respostas.urgencia,
+      modelo: resultado.modelo,
+      origem: origem,
+      dispositivo: dispositivo,
+      clicouWhats: "Concluiu triagem"
+    });
 
     const mensagemWhats =
       `Olá Rafa! Fiz a triagem com o Assistente IA da Rafa Digital:\n` +
@@ -126,9 +171,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const resumoTexto =
       `Analisei o seu perfil (${respostas.nicho}) e a melhor escolha para você é: ${resultado.modelo}. ${resultado.motivo}`;
 
-    const botaoHtml = `<a href="${linkWhats}" target="_blank" rel="noopener noreferrer" class="msg-cta-whats" data-origem="chat_ia_whatsapp">Enviar diagnóstico no WhatsApp do Rafa ↗</a>`;
+    const botaoHtml = `<a href="${linkWhats}" target="_blank" rel="noopener noreferrer" id="btn-final-whats" class="msg-cta-whats" data-origem="chat_ia_whatsapp">Enviar diagnóstico no WhatsApp do Rafa ↗</a>`;
 
     adicionarMensagem(resumoTexto, "ia", botaoHtml);
+
+    const btnFinalWhats = document.getElementById("btn-final-whats");
+    if (btnFinalWhats) {
+      btnFinalWhats.addEventListener("click", () => {
+        enviarParaPlanilha({
+          nicho: respostas.nicho,
+          objetivo: respostas.objetivo,
+          urgencia: respostas.urgencia,
+          modelo: resultado.modelo,
+          origem: origem,
+          dispositivo: dispositivo,
+          clicouWhats: "Sim (Abriu WhatsApp)"
+        });
+      });
+    }
   }
 
   function processarResposta(valor) {
