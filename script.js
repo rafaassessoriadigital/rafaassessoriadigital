@@ -27,8 +27,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Celular" : "Computador";
   }
 
-  function enviarParaPlanilha(payload) {
+  function enviarParaPlanilha(payload, usarBeacon = false) {
     if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("COLE_AQUI")) return;
+
+    const corpoJson = JSON.stringify(payload);
+
+    if (usarBeacon && navigator.sendBeacon) {
+      const blob = new Blob([corpoJson], { type: "text/plain;charset=utf-8" });
+      const enviado = navigator.sendBeacon(APPS_SCRIPT_URL, blob);
+      if (enviado) return;
+    }
 
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
@@ -36,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
-      body: JSON.stringify(payload)
+      body: corpoJson
     }).catch((err) => console.error("Erro ao registrar na planilha:", err));
   }
 
@@ -178,15 +186,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnFinalWhats = document.getElementById("btn-final-whats");
     if (btnFinalWhats) {
       btnFinalWhats.addEventListener("click", () => {
-        enviarParaPlanilha({
-          nicho: respostas.nicho,
-          objetivo: respostas.objetivo,
-          urgencia: respostas.urgencia,
-          modelo: resultado.modelo,
-          origem: origem,
-          dispositivo: dispositivo,
-          clicouWhats: "Sim (Abriu WhatsApp)"
-        });
+        enviarParaPlanilha(
+          {
+            nicho: respostas.nicho,
+            objetivo: respostas.objetivo,
+            urgencia: respostas.urgencia,
+            modelo: resultado.modelo,
+            origem: origem,
+            dispositivo: dispositivo,
+            clicouWhats: "Sim (Abriu WhatsApp)"
+          },
+          true
+        );
       });
     }
   }
