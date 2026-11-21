@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
   const btnResetChat = document.getElementById("btn-reset-chat");
 
+  let etapaAtual = 0;
+  let respostas = {};
+  let origemBotaoAtual = "";
+  let triagemFinalizada = false;
+
   function obterOrigemTrafego(botaoOrigem = "") {
     const params = new URLSearchParams(window.location.search);
     const utmSource = params.get("utm_source");
@@ -108,11 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ]
     }
   ];
-
-  let etapaAtual = 0;
-  let respostas = {};
-  let origemBotaoAtual = "";
-  let triagemFinalizada = false;
 
   function rolarParaBaixo() {
     chatMensagens.scrollTop = chatMensagens.scrollHeight;
