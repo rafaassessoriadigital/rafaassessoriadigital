@@ -8,19 +8,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
   const btnResetChat = document.getElementById("btn-reset-chat");
 
-  function obterOrigemTrafego() {
+  function obterOrigemTrafego(botaoOrigem = "") {
     const params = new URLSearchParams(window.location.search);
     const utmSource = params.get("utm_source");
     const utmMedium = params.get("utm_medium");
     const utmCampaign = params.get("utm_campaign");
 
-    if (utmSource) {
-      return [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / ");
-    }
-    if (document.referrer) {
-      return document.referrer;
-    }
-    return "Acesso direto";
+    const baseOrigem = utmSource
+      ? [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / ")
+      : document.referrer || "Acesso direto";
+
+    return botaoOrigem ? `${baseOrigem} (${botaoOrigem})` : baseOrigem;
   }
 
   function obterDispositivo() {
@@ -88,6 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let etapaAtual = 0;
   let respostas = {};
+  let origemBotaoAtual = "";
+  let triagemFinalizada = false;
 
   function rolarParaBaixo() {
     chatMensagens.scrollTop = chatMensagens.scrollHeight;
@@ -148,12 +148,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function finalizarTriagem() {
+    triagemFinalizada = true;
     chatOpcoes.innerHTML = "";
     chatInput.disabled = true;
     chatInput.placeholder = "Triagem concluída! Clique no botão acima para falar com o Rafa.";
 
     const resultado = diagnosticarModelo(respostas);
-    const origem = obterOrigemTrafego();
+    const origem = obterOrigemTrafego(origemBotaoAtual);
     const dispositivo = obterDispositivo();
 
     enviarParaPlanilha({
@@ -222,9 +223,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function iniciarChat() {
+  function iniciarChat(novaOrigem = "") {
     etapaAtual = 0;
     respostas = {};
+    triagemFinalizada = false;
+    if (novaOrigem) {
+      origemBotaoAtual = novaOrigem;
+    }
     chatMensagens.innerHTML = "";
     chatOpcoes.innerHTML = "";
     chatInput.disabled = false;
@@ -235,6 +240,23 @@ document.addEventListener("DOMContentLoaded", () => {
     renderizarOpcoes(etapas[0].opcoes);
   }
 
+  document.querySelectorAll('a[href="#triagem-ia"]').forEach((link) => {
+    link.addEventListener("click", () => {
+      const origemClicada = link.getAttribute("data-origem") || "";
+      if (origemClicada) {
+        origemBotaoAtual = origemClicada;
+      }
+      if (triagemFinalizada) {
+        iniciarChat(origemClicada);
+      }
+      setTimeout(() => {
+        if (!chatInput.disabled) {
+          chatInput.focus();
+        }
+      }, 350);
+    });
+  });
+
   chatForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (chatInput.disabled) return;
@@ -243,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     processarResposta(valor);
   });
 
-  btnResetChat.addEventListener("click", iniciarChat);
+  btnResetChat.addEventListener("click", () => iniciarChat());
 
   iniciarChat();
 });
