@@ -25,16 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Celular" : "Computador";
   }
 
-  function enviarParaPlanilha(payload, usarBeacon = false) {
+  function enviarParaPlanilha(payload) {
     if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("COLE_AQUI")) return;
-
-    const corpoJson = JSON.stringify(payload);
-
-    if (usarBeacon && navigator.sendBeacon) {
-      const blob = new Blob([corpoJson], { type: "text/plain;charset=utf-8" });
-      const enviado = navigator.sendBeacon(APPS_SCRIPT_URL, blob);
-      if (enviado) return;
-    }
 
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
@@ -42,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
-      body: corpoJson
+      body: JSON.stringify(payload)
     }).catch((err) => console.error("Erro ao registrar na planilha:", err));
   }
 
@@ -148,7 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function finalizarTriagem() {
+    if (triagemFinalizada) return;
     triagemFinalizada = true;
+
     chatOpcoes.innerHTML = "";
     chatInput.disabled = true;
     chatInput.placeholder = "Triagem concluída! Clique no botão acima para falar com o Rafa.";
@@ -183,27 +177,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const botaoHtml = `<a href="${linkWhats}" target="_blank" rel="noopener noreferrer" id="btn-final-whats" class="msg-cta-whats" data-origem="chat_ia_whatsapp">Enviar diagnóstico no WhatsApp do Rafa ↗</a>`;
 
     adicionarMensagem(resumoTexto, "ia", botaoHtml);
-
-    const btnFinalWhats = document.getElementById("btn-final-whats");
-    if (btnFinalWhats) {
-      btnFinalWhats.addEventListener("click", () => {
-        enviarParaPlanilha(
-          {
-            nicho: respostas.nicho,
-            objetivo: respostas.objetivo,
-            urgencia: respostas.urgencia,
-            modelo: resultado.modelo,
-            origem: origem,
-            dispositivo: dispositivo,
-            clicouWhats: "Sim (Abriu WhatsApp)"
-          },
-          true
-        );
-      });
-    }
   }
 
   function processarResposta(valor) {
+    if (triagemFinalizada) return;
     const textoLimpo = valor.trim();
     if (!textoLimpo) return;
 
