@@ -1,4 +1,11 @@
-<link rel="canonical" href="https://rafaassessoriadigital.github.io/rafaassessoriadigital/">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rafa Digital | Páginas que Vendem para Comércios Locais</title>
+  <meta name="description" content="Crio páginas rápidas, profissionais e prontas para transformar visitas do Google e Instagram em clientes no seu WhatsApp.">
+  <link rel="canonical" href="https://rafaassessoriadigital.github.io/rafaassessoriadigital/">
 
   <!-- Ícone da aba do navegador (Favicon) -->
   <link rel="icon" type="image/png" href="logo.png">
@@ -23,6 +30,8 @@
   <meta name="twitter:description" content="Crio páginas rápidas, profissionais e prontas para transformar visitas do Google e Instagram em clientes no seu WhatsApp.">
   <meta name="twitter:image" content="https://rafaassessoriadigital.github.io/rafaassessoriadigital/logo.png?v=2">
 
+  <link rel="stylesheet" href="style.css">
+
   <!-- Dados Estruturados para o Google (JSON-LD) -->
   <script type="application/ld+json">
   {
@@ -35,19 +44,129 @@
     "description": "Criação de landing pages de alta conversão, cardápios digitais e sistemas de atendimento integrado ao WhatsApp para comércios locais.",
     "telephone": "+55-41-98868-5625",
     "areaServed": [
-      {
-        "@type": "City",
-        "name": "Pinhais"
-      },
-      {
-        "@type": "City",
-        "name": "Curitiba"
-      },
-      {
-        "@type": "Country",
-        "name": "Brasil"
-      }
+      { "@type": "City", "name": "Pinhais" },
+      { "@type": "City", "name": "Curitiba" },
+      { "@type": "Country", "name": "Brasil" }
     ],
     "priceRange": "$$"
   }
   </script>
+</head>
+<body>
+  <header class="topo">
+    <div class="container flex-topo">
+      <a href="#" class="logo">
+        <img src="logo.png" alt="Rafa Digital" class="logo-img">
+      </a>
+      <nav class="topo-acoes">
+        <a href="#modelos" class="link-topo">Modelos</a>
+        <a href="#triagem-ia" class="btn-pequeno" data-origem="topo">Fazer Diagnóstico</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <span class="tag">PRESENÇA DIGITAL PARA NEGÓCIOS LOCAIS</span>
+        <h1>Páginas rápidas feitas para transformar visitas em clientes no seu WhatsApp</h1>
+        <p class="subtitulo">
+          Landing pages, cardápios e catálogos digitais pensados para destacar o seu comércio no Google e no Instagram da sua região.
+        </p>
+        <div class="hero-botoes">
+          <a href="#triagem-ia" class="btn-principal" data-origem="hero_principal">Descobrir meu modelo ideal</a>
+          <a href="#modelos" class="btn-secundario">Ver formatos</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="modelos" class="secao-escura">
+      <div class="container">
+        <h2>Formatos pensados para vender todos os dias</h2>
+        <div class="grid-3">
+          <div class="card">
+            <span class="badge-sec">EXPRESS</span>
+            <h3>Landing Page Express</h3>
+            <p>Ideal para prestadores de serviço e negócios locais que precisam aparecer com autoridade no Google e levar o cliente direto para o WhatsApp.</p>
+            <ul>
+              <li>Carregamento ultrarrápido no celular</li>
+              <li>Botões diretos para WhatsApp</li>
+              <li>Otimizada para buscas locais</li>
+            </ul>
+            <a href="#triagem-ia" class="btn-secundario" data-origem="card_express">Quero esse modelo</a>
+          </div>
+
+          <div class="card destaque">
+            <span class="badge">MAIS PEDIDO</span>
+            <h3>Página + Cardápio / Catálogo</h3>
+            <p>Perfeita para lanchonetes, sorveterias, deliveries e lojas que querem o cliente escolhendo os itens e enviando o pedido pronto.</p>
+            <ul>
+              <li>Produtos com fotos e preços</li>
+              <li>Pedido organizado no WhatsApp</li>
+              <li>Visual profissional no celular</li>
+            </ul>
+            <a href="#triagem-ia" class="btn-principal" data-origem="card_catalogo">Quero esse modelo</a>
+          </div>
+
+          <div class="card">
+            <span class="badge-sec">PREMIUM</span>
+            <h3>Landing Page + Triagem</h3>
+            <p>Para operações consolidadas que querem filtrar curiosos e receber no WhatsApp apenas contatos já qualificados.</p>
+            <ul>
+              <li>Diagnóstico automático de clientes</li>
+              <li>Registro estruturado de contatos</li>
+              <li>Copy estratégica de conversão</li>
+            </ul>
+            <a href="#triagem-ia" class="btn-secundario" data-origem="card_premium">Quero esse modelo</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="triagem-ia" class="secao">
+      <div class="container">
+        <div class="secao-cabecalho">
+          <span class="tag">DIAGNÓSTICO GRATUITO</span>
+          <h2>Descubra qual página faz mais sentido para o seu negócio</h2>
+        </div>
+
+        <div class="chat-wrapper">
+          <div class="chat-header">
+            <div class="chat-avatar">RD</div>
+            <div>
+              <strong>Assistente Rafa Digital</strong>
+              <div class="chat-status">
+                <span class="status-dot"></span>
+                <span>Online agora</span>
+              </div>
+            </div>
+            <button type="button" id="btn-reset-chat" class="btn-reset-chat">Reiniciar</button>
+          </div>
+
+          <div id="chat-mensagens" class="chat-mensagens"></div>
+          <div id="chat-opcoes" class="chat-opcoes"></div>
+
+          <form id="chat-form" class="chat-input-form">
+            <input type="text" id="chat-input" placeholder="Digite sua resposta..." autocomplete="off">
+            <button type="submit" class="btn-enviar-chat">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container">
+      <p>Rafa Digital • Pinhais, Curitiba e todo o Brasil</p>
+      <p class="copy">© 2026 Rafa Digital. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <a href="#triagem-ia" class="fab-ia" data-origem="fab_flutuante">
+    <span class="fab-icon">IA</span>
+    <span class="fab-texto">Fazer diagnóstico</span>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>
