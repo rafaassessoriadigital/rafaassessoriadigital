@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const WHATSAPP_NUMERO = "5541988685625";
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsSkGetSPTiYirnM1SFWMZ1AQPL6iMf3sEWzQH7kd7B8ZXA7Yz9_H3pXMXEh5A4WKsNQ/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2F8PlT-PEVRzfNmXHTBhGgYKLX0xQCtdaPkCUHtPnToDIx2hY9Ik1UKDPL_WMEk09Tw/exec";
 
   const chatMensagens = document.getElementById("chat-mensagens");
   const chatOpcoes = document.getElementById("chat-opcoes");
@@ -38,40 +38,73 @@ document.addEventListener("DOMContentLoaded", () => {
     }).catch((err) => console.error("Erro ao registrar na planilha:", err));
   }
 
+  function primeiroNome() {
+    if (!respostas.nome) return "";
+    return respostas.nome.trim().split(/\s+/)[0];
+  }
+
   const etapas = [
     {
+      chave: "nome",
+      pergunta: () =>
+        "Olá! Que bom ter você por aqui! 🚀 Sou o assistente da Rafa Digital e vou te ajudar a desenhar a presença digital ideal para fazer o seu negócio vender todos os dias. Para começarmos, como posso te chamar?",
+      placeholder: "Digite seu nome...",
+      opcoes: []
+    },
+    {
+      chave: "regiao",
+      pergunta: () =>
+        `Prazer, ${primeiroNome()}! Muito bom ver você dando esse passo para profissionalizar seu posicionamento. Em qual bairro e cidade você atua (ou pretende atuar)?`,
+      placeholder: "Ex: Centro, Pinhais - PR",
+      opcoes: []
+    },
+    {
       chave: "nicho",
-      pergunta:
-        "Olá! Sou o assistente da Rafa Digital. Vou te ajudar a descobrir em 30 segundos qual página traz mais resultado para você. Qual é o tipo do seu negócio?",
-      placeholder: "Ou digite o tipo do seu negócio...",
+      pergunta: () =>
+        `Excelente! Conhecer a região (${respostas.regiao}) ajuda muito a destacar você da concorrência local. Qual é o seu nicho ou ramo de atuação?`,
+      placeholder: "Ou digite o seu ramo de atuação...",
       opcoes: [
         "Barbearia / Salão / Estética",
         "Clínica / Saúde / Consultório",
         "Lanchonete / Sorveteria / Delivery",
         "Oficina / Prestador de Serviços",
         "Loja / Comércio Local",
-        "Outro tipo de negócio"
+        "Outro nicho"
       ]
     },
     {
-      chave: "objetivo",
-      pergunta: "Show! E qual é o seu principal objetivo agora?",
-      placeholder: "Ou escreva seu objetivo...",
+      chave: "negocioProprio",
+      pergunta: () =>
+        `Show de bola, ${primeiroNome()}! O mercado de "${respostas.nicho}" tem muito espaço para quem se posiciona bem. Você já tem um negócio próprio rodando aí na região ou está estruturando agora?`,
+      placeholder: "Ou escreva sua situação atual...",
       opcoes: [
-        "Receber mais clientes no WhatsApp",
-        "Ter um cardápio ou catálogo digital",
-        "Aparecer melhor no Google da minha região",
-        "Profissionalizar o link da bio do Instagram"
+        "Já tenho negócio próprio ativo na região",
+        "Atendo em domicílio / online na região",
+        "Estou abrindo / estruturando o negócio agora"
       ]
     },
     {
-      chave: "urgencia",
-      pergunta: "Perfeito. Para quando você gostaria de colocar essa página no ar?",
-      placeholder: "Ou digite o prazo desejado...",
+      chave: "porte",
+      pergunta: () =>
+        "Perfeito! Para eu te indicar uma estrutura compatível com o seu momento atual, qual é hoje o tamanho aproximado da sua operação (faturamento médio e equipe)?",
+      placeholder: "Ou descreva sua equipe e faturamento médio...",
       opcoes: [
-        "O quanto antes (esta semana)",
-        "Nos próximos 15 dias",
-        "Só estou pesquisando valores e ideias"
+        "Trabalho sozinho • até R$ 5 mil/mês",
+        "Pequena equipe (2 a 5) • R$ 5 mil a R$ 20 mil/mês",
+        "Operação consolidada (6+) • acima de R$ 20 mil/mês",
+        "Ainda vou iniciar o faturamento"
+      ]
+    },
+    {
+      chave: "desejo",
+      pergunta: () =>
+        `Última pergunta, ${primeiroNome()}! Qual é o seu maior desejo ou meta com essa página hoje?`,
+      placeholder: "Ou escreva o que você mais quer conquistar...",
+      opcoes: [
+        "Lotar meu WhatsApp de clientes qualificados",
+        "Ser encontrado no Google da minha região",
+        "Ter um cardápio ou catálogo que vende sozinho",
+        "Passar mais profissionalismo e cobrar melhor"
       ]
     }
   ];
@@ -102,6 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderizarOpcoes(listaOpcoes) {
     chatOpcoes.innerHTML = "";
+    if (!listaOpcoes || listaOpcoes.length === 0) return;
+
     listaOpcoes.forEach((opcao) => {
       const btn = document.createElement("button");
       btn.type = "button";
@@ -113,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function diagnosticarModelo(dados) {
-    const texto = `${dados.nicho} ${dados.objetivo}`.toLowerCase();
+    const texto = `${dados.nicho} ${dados.desejo}`.toLowerCase();
 
     if (
       texto.includes("lanchonete") ||
@@ -128,14 +163,22 @@ document.addEventListener("DOMContentLoaded", () => {
       return {
         modelo: "Página + Cardápio / Catálogo Digital",
         motivo:
-          "Esse formato organiza seus produtos com fotos e preços para o cliente montar o pedido sozinho e enviar pronto no seu WhatsApp."
+          "Esse formato organiza seus produtos com fotos e preços para o cliente montar o pedido sozinho e enviar mastigado no seu WhatsApp."
+      };
+    }
+
+    if (dados.porte && dados.porte.includes("consolidada")) {
+      return {
+        modelo: "Landing Page Premium + Funil de Qualificação",
+        motivo:
+          "Para uma operação já consolidada, uma página de alta conversão com triagem automática filtra curiosos e entrega clientes prontos para a sua equipe fechar."
       };
     }
 
     return {
       modelo: "Landing Page Express de Alta Conversão",
       motivo:
-        "Ela apresenta seus serviços de forma direta, passa credibilidade no Google e Instagram e leva o cliente pronto para fechar no seu WhatsApp."
+        "Ela posiciona você com autoridade no Google e Instagram da sua região e transforma visitantes em clientes prontos no seu WhatsApp."
     };
   }
 
@@ -145,16 +188,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     chatOpcoes.innerHTML = "";
     chatInput.disabled = true;
-    chatInput.placeholder = "Triagem concluída! Clique no botão acima para falar com o Rafa.";
+    chatInput.placeholder = "Diagnóstico pronto! Clique no botão acima para falar com o Rafa.";
 
     const resultado = diagnosticarModelo(respostas);
     const origem = obterOrigemTrafego(origemBotaoAtual);
     const dispositivo = obterDispositivo();
 
     enviarParaPlanilha({
+      nome: respostas.nome,
+      regiao: respostas.regiao,
       nicho: respostas.nicho,
-      objetivo: respostas.objetivo,
-      urgencia: respostas.urgencia,
+      negocioProprio: respostas.negocioProprio,
+      porte: respostas.porte,
+      desejo: respostas.desejo,
       modelo: resultado.modelo,
       origem: origem,
       dispositivo: dispositivo,
@@ -162,19 +208,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const mensagemWhats =
-      `Olá Rafa! Fiz a triagem com o Assistente IA da Rafa Digital:\n` +
-      `• Negócio: ${respostas.nicho}\n` +
-      `• Objetivo: ${respostas.objetivo}\n` +
-      `• Prazo: ${respostas.urgencia}\n` +
-      `• Modelo indicado: ${resultado.modelo}\n\n` +
-      `Quero ver como funciona para o meu negócio!`;
+      `Olá Rafa! Tudo bem? Sou *${respostas.nome}* e fiz o diagnóstico no site da Rafa Digital:\n\n` +
+      `• *Região:* ${respostas.regiao}\n` +
+      `• *Nicho:* ${respostas.nicho}\n` +
+      `• *Momento:* ${respostas.negocioProprio}\n` +
+      `• *Porte:* ${respostas.porte}\n` +
+      `• *Desejo principal:* ${respostas.desejo}\n` +
+      `• *Modelo indicado:* ${resultado.modelo}\n\n` +
+      `Quero ver como podemos colocar isso no ar!`;
 
     const linkWhats = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagemWhats)}`;
 
     const resumoTexto =
-      `Analisei o seu perfil (${respostas.nicho}) e a melhor escolha para você é: ${resultado.modelo}. ${resultado.motivo}`;
+      `Incrível, ${primeiroNome()}! Analisei o cenário do seu negócio em ${respostas.regiao} e a melhor escolha para você é: ${resultado.modelo}. ${resultado.motivo}`;
 
-    const botaoHtml = `<a href="${linkWhats}" target="_blank" rel="noopener noreferrer" id="btn-final-whats" class="msg-cta-whats" data-origem="chat_ia_whatsapp">Enviar diagnóstico no WhatsApp do Rafa ↗</a>`;
+    const botaoHtml = `<a href="${linkWhats}" target="_blank" rel="noopener noreferrer" id="btn-final-whats" class="msg-cta-whats" data-origem="chat_ia_whatsapp">Falar com o Rafa no WhatsApp ↗</a>`;
 
     adicionarMensagem(resumoTexto, "ia", botaoHtml);
   }
@@ -192,8 +240,11 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         const proxima = etapas[etapaAtual];
         chatInput.placeholder = proxima.placeholder;
-        adicionarMensagem(proxima.pergunta, "ia");
+        adicionarMensagem(proxima.pergunta(), "ia");
         renderizarOpcoes(proxima.opcoes);
+        if (!proxima.opcoes || proxima.opcoes.length === 0) {
+          chatInput.focus();
+        }
       }, 280);
     } else {
       setTimeout(finalizarTriagem, 300);
@@ -213,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chatInput.value = "";
     chatInput.placeholder = etapas[0].placeholder;
 
-    adicionarMensagem(etapas[0].pergunta, "ia");
+    adicionarMensagem(etapas[0].pergunta(), "ia");
     renderizarOpcoes(etapas[0].opcoes);
   }
 
