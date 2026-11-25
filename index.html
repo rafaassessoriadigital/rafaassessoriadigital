@@ -48,7 +48,7 @@
       { "@type": "City", "name": "Curitiba" },
       { "@type": "Country", "name": "Brasil" }
     ],
-    "priceRange": "\$\$\$"
+    "priceRange": "$$$"
   }
   </script>
 </head>
@@ -127,4 +127,45 @@
       <div class="container">
         <div class="secao-cabecalho">
           <span class="tag">DIAGNÓSTICO ESTRATÉGICO</span>
-          <h2>Descubra qual arquitetura
+          <h2>Descubra qual arquitetura faz mais sentido para o seu negócio</h2>
+          <p class="subtitulo">Responda às perguntas rápidas abaixo e receba uma recomendação direta com resumo pronto para enviar no WhatsApp.</p>
+        </div>
+
+        <div class="chat-wrapper">
+          <div class="chat-header">
+            <div class="chat-avatar">RD</div>
+            <div>
+              <strong>Assistente Rafa Digital</strong>
+              <span class="chat-status"><span class="status-dot"></span> Online para diagnóstico</span>
+            </div>
+            <button type="button" id="btn-reset-chat" class="btn-reset-chat">Reiniciar</button>
+          </div>
+
+          <div id="chat-mensagens" class="chat-mensagens" aria-live="polite"></div>
+          <div id="chat-opcoes" class="chat-opcoes"></div>
+
+          <form id="chat-form" class="chat-input-form">
+            <input type="text" id="chat-input" placeholder="Digite sua resposta..." autocomplete="off">
+            <button type="submit" class="btn-enviar-chat">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container">
+      <p>Rafa Digital — Arquitetura Digital, Landing Pages e Sistemas de Conversão.</p>
+      <a href="#triagem-ia" class="btn-principal" data-origem="rodape">Iniciar diagnóstico agora</a>
+      <p class="copy">© 2026 Rafa Digital. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <a href="#triagem-ia" class="fab-ia" data-origem="botao_flutuante" aria-label="Ir para o diagnóstico">
+    <span class="fab-icon">IA</span>
+    <span class="fab-texto">Diagnóstico</span>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>
